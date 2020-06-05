@@ -221,7 +221,7 @@ main(int argc, char const *argv[])
 		ti_p[i].threshold = 20;
 	}
 
-	double time = clock();
+	
 	for (int i = 0; i < number_threads; i++) {
 		int res;
 		res = pthread_create(&threads[i], NULL, SobelFilter, (void *) (&(ti_p[i])));	//start threads
@@ -235,6 +235,8 @@ main(int argc, char const *argv[])
 			exit(1);
 		}
 	}
+	
+	double time = clock();
 
 	for (int i = 0; i < number_threads; i++) {
 		int res = pthread_join(threads[i], NULL);	//join threads
