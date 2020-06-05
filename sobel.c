@@ -249,7 +249,79 @@ int main(int argc, char const *argv[]) {
   }
 
 
-  
+  double time = clock();
+  for (int i = 0; i < number_threads; i++)
+  {
+    int res;
+    res = pthread_create (&threads[i], NULL, SobelFilter , (void *)(&(ti_p[i]))); //start threads
+    if (res != 0)
+    {
+      perror("Thread creation failed");
+      Free_RGB(image, height);
+      Free_Gray(gray_image, height);
+      Free_Gray(filter_image, height);
+      free(threads);
+      free(ti_p);
+      exit(1);
+    }
+  }
+
+
+  for (int i = 0; i < number_threads; i++)
+  {
+    int res = pthread_join(threads[i], NULL); //join threads
+    if (res != 0)
+    {
+      perror("Thread join failed");
+      Free_RGB(image, height);
+      Free_Gray(gray_image, height);
+      Free_Gray(filter_image, height);
+      free(threads);
+      free(ti_p);
+      exit(1);
+    }
+  }
+
+  time = (clock() - time) / CLOCKS_PER_SEC;
+
+  printf("Time: %f sec\n",time);
+  free(threads);
+  free(ti_p);
+
+  char header[SIZE];
+  sprintf(header, "P5\n%d %d\n%d\n",width,height,maxval);
+  fd_filter_image = creat("B.pgm", S_IRWXU);
+
+  if (fd_filter_image == -1)
+  {
+    perror("Error creation filter_image file");
+    Free_RGB(image, height);
+    Free_Gray(gray_image, height);
+    Free_Gray(filter_image, height);
+    exit(1);
+  }
+
+  if (write(fd_filter_image, header, strlen(header) * sizeof(unsigned char)) <= 0)
+  {
+    perror("Error writing to file");
+    Free_RGB(image, height);
+    Free_Gray(gray_image, height);
+    Free_Gray(filter_image, height);
+    exit(1);
+  }
+
+  for (int i = 0;i < height; i++)
+  {
+    n = write(fd_filter_image, filter_image[i], width * sizeof(unsigned char));
+    if (n <= 0)
+    {
+      perror("Error writing to file");
+      Free_RGB(image, height);
+      Free_Gray(gray_image, height);
+      Free_Gray(filter_image, height);
+      exit(1);
+    }
+  }
 
   Free_RGB(image, height);
   Free_Gray(gray_image, height);
@@ -337,5 +409,5 @@ void *SobelFilter(void *arg)
       filter_image[i][j] = G; //(G < inf->threshold) ? 0 : 255;
     }
 
-   pthread_exit("H6v3 6 g00d d6y!");
+   pthread_exit("Have a good day!");
 }
