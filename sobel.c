@@ -365,6 +365,10 @@ SobelFilter(void *arg)
 	thread_info *inf = arg;
 	int G;
 
+ for (int i = inf->start_row; i <= inf->end_row; i++)
+    for (int j = 1; j < inf->width - 1; j++)
+    {
+
 	G = sqrt
 	      (
 		(gray_image[i+1][j-1] + 2*gray_image[i+1][j] + gray_image[i+1][j+1] - gray_image[i-1][j-1] - 2*gray_image[i-1][j] - gray_image[i-1][j+1])*
@@ -374,8 +378,8 @@ SobelFilter(void *arg)
 		(gray_image[i-1][j+1] + 2*gray_image[i][j+1] + gray_image[i+1][j+1] - gray_image[i-1][j-1] - 2*gray_image[i][j-1] - gray_image[i+1][j-1])
 	      );
 
-			filter_image[i][j] = G;	//(G < inf->threshold) ? 0 : 255;
-		}
+	filter_image[i][j] = G;	//(G < inf->threshold) ? 0 : 255;
+    }
 
-	pthread_exit("Have a good VOOGI-VOOGI %USWER_NAME%!");
+	pthread_exit("Have a good sdfsdfsdf!!!!");
 }
