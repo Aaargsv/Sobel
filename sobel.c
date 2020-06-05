@@ -33,6 +33,7 @@ unsigned char **filter_image;
 unsigned char **gray_image;
 unsigned char **filter_image;
 
+void *SobelFilter(void *arg);
 int   isNumber (const char *str);
 void  ReadRecord(int fd, unsigned char *buffer); //read string of file header
 void  RGB2GrayScale(int width, int height);
@@ -315,4 +316,26 @@ void RGB2GrayScale(int width, int height)
 
 }
 
+void *SobelFilter(void *arg)
+{
+  thread_info *inf = arg;
+  int G;
 
+  for (int i = inf->start_row; i <= inf->end_row; i++)
+    for (int j = 1; j < inf->width - 1; j++)
+    {
+
+      G = sqrt
+      (
+        (gray_image[i+1][j-1] + 2*gray_image[i+1][j] + gray_image[i+1][j+1] - gray_image[i-1][j-1] - 2*gray_image[i-1][j] - gray_image[i-1][j+1])*
+        (gray_image[i+1][j-1] + 2*gray_image[i+1][j] + gray_image[i+1][j+1] - gray_image[i-1][j-1] - 2*gray_image[i-1][j] - gray_image[i-1][j+1])
+        +
+        (gray_image[i-1][j+1] + 2*gray_image[i][j+1] + gray_image[i+1][j+1] - gray_image[i-1][j-1] - 2*gray_image[i][j-1] - gray_image[i+1][j-1])*
+        (gray_image[i-1][j+1] + 2*gray_image[i][j+1] + gray_image[i+1][j+1] - gray_image[i-1][j-1] - 2*gray_image[i][j-1] - gray_image[i+1][j-1])
+      );
+
+      filter_image[i][j] = G; //(G < inf->threshold) ? 0 : 255;
+    }
+
+   pthread_exit("H6v3 6 g00d d6y!");
+}
