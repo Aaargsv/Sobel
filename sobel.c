@@ -221,7 +221,12 @@ main(int argc, char const *argv[])
 		ti_p[i].threshold = 20;
 	}
 
-	
+	clockid_t clk_id;
+ 	struct timespec tp1;
+	struct timespec tp2;
+	double realtime;
+
+	clock_gettime (CLOCK_REALTIME, &tp1);
 	for (int i = 0; i < number_threads; i++) {
 		int res;
 		res = pthread_create(&threads[i], NULL, SobelFilter, (void *) (&(ti_p[i])));	//start threads
@@ -235,8 +240,6 @@ main(int argc, char const *argv[])
 			exit(1);
 		}
 	}
-	
-	double time = clock();
 
 	for (int i = 0; i < number_threads; i++) {
 		int res = pthread_join(threads[i], NULL);	//join threads
@@ -250,10 +253,11 @@ main(int argc, char const *argv[])
 			exit(1);
 		}
 	}
+	clock_gettime (CLOCK_REALTIME, &tp2);
+	realtime = (tp2.tv_sec - tp1.tv_sec) +
+						 (tp2.tv_nsec - tp1.tv_nsec) / 1000000000.;
 
-	time = (clock() - time) / CLOCKS_PER_SEC;
-
-	printf("Time: %f sec\n", time);
+	printf("time: %f sec\n", realtime);
 	free(threads);
 	free(ti_p);
 
@@ -364,6 +368,7 @@ RGB2GrayScale(int width, int height)
 void *
 SobelFilter(void *arg)
 {
+	sleep(1);
 	thread_info *inf = arg;
 	int G;
 
